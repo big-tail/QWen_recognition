@@ -1,7 +1,6 @@
 import json
 import streamlit as st
 import requests
-import base64
 
 st.set_page_config(
     page_title="ChatApp",
@@ -42,7 +41,7 @@ def get_response_material(history):
     headers = {'Content-Type': 'application/json',
                'Authorization': 'sk-ac227686a13348d9a5fcf3857c36de48'}
     payload = {
-        'model': 'qwen-vl-plus',
+        'model': 'qwen-vl-chat-v1',
         'input': {
             'messages': history
         }
@@ -51,28 +50,30 @@ def get_response_material(history):
     return response_data.status_code, json.loads(response_data.text)
 
 
-with st.sidebar:
-    option = st.selectbox(
-        '请选择图片上传方式',
-        ['本地图片上传', '在线图片URL']
-    )
-    if option == '本地图片上传':
-        if upload_files := st.file_uploader('请选择本地图片',
-                                            type=['png', 'jpg', 'jpeg', 'tiff', 'bmp'],
-                                            key='localImage'):
-            image = upload_files.read()
-            # st.write(image)df
-            st.image(image)
-    elif option == '在线图片URL':
-        if image := st.text_input('请输入URL'):
-            image
-            st.image(image)
-    else:
-        # TODO 修改
-        image = ''
+
 
 # user_input接收用户的输入
 if user_input := st.chat_input("Chat with 通义千问: "):
+
+    with st.sidebar:
+        option = st.selectbox(
+            '请选择图片上传方式',
+            ['local', 'online']
+        )
+        if option == 'local':
+            if upload_files := st.file_uploader('请选择本地图片',
+                                                type=['png', 'jpg', 'jpeg', 'tiff', 'bmp'],
+                                                key='local_image'):
+                image = upload_files.read()
+                # st.write(image)df
+                st.image(image)
+        elif option == 'online':
+            if image := st.text_input('请输入URL'):
+                image
+                st.image(image)
+        else:
+            # TODO 修改
+            image = ''
     # 在页面上显示用户的输入
     with st.chat_message("user"):
         st.markdown(user_input)
