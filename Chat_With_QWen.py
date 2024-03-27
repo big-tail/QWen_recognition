@@ -7,7 +7,7 @@ import json
 def show_message_box(*args):
     pass
 
-# 处理图片，根据来源生成对应的api消息格式
+### 处理图片，根据来源生成对应的api消息格式
 def dispose_input_to_message(role, user_input, images=[]):
     content = []
     content.append({'text': user_input})
@@ -18,7 +18,7 @@ def dispose_input_to_message(role, user_input, images=[]):
         'content': content
     }
     return messages
-# 侦测网络图片是否存在
+### 侦测网络图片是否存在
 def check_online_image_exist(image_url):
     try:
         r = requests.get(image_url)
@@ -27,7 +27,7 @@ def check_online_image_exist(image_url):
     except:
         return 'Image does not exist!'
 
-# 本地图片上传接口
+### 本地图片上传接口
 def conversation_call_with_sdk(messages,model='qwen-vl-plus',api_key='sk-ac227686a13348d9a5fcf3857c36de48'):
     dashscope.api_key = api_key
     response = dashscope.MultiModalConversation.call(model,
@@ -35,7 +35,7 @@ def conversation_call_with_sdk(messages,model='qwen-vl-plus',api_key='sk-ac22768
     return response
 
 
-# 网络图片URL上传接口
+### 网络图片URL上传接口
 def conversation_call_with_http(messages,model='qwen-vl-plus',api_key='sk-ac227686a13348d9a5fcf3857c36de48'):
     model_url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation'
 
@@ -51,7 +51,7 @@ def conversation_call_with_http(messages,model='qwen-vl-plus',api_key='sk-ac2276
     response = requests.request("POST", model_url,headers=headers,data=json.dumps(payload))
     return response
 
-# 拆分响应包信息
+### 拆分响应包信息
 def dispose_response_message(response):
     status_code = response.status_code
     try:
@@ -62,7 +62,7 @@ def dispose_response_message(response):
         message = response['output']['choices'][0]['message']
     else:
         #完成错误代码输出
-        message = ''
         error_code = response['code']
         error_message = response['message']
+        message = f'错误码:{error_code}。\n 错误详细信息{error_message}'
     return status_code, message
