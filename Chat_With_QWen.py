@@ -4,13 +4,13 @@ import dashscope
 import json
 
 # TODO 拆分相应包信息
-def show_message_box(*args):
-    pass
+
 
 ### 处理图片，根据来源生成对应的api消息格式
-def dispose_input_to_message(role, user_input, images=[]):
-    content = []
-    content.append({'text': user_input})
+def dispose_input_to_message(role, user_input, images=None):
+    if images is None:
+        images = []
+    content = [{'text': user_input}]
     for image in images:
         content.append({"image": image})
     messages = {
@@ -64,5 +64,6 @@ def dispose_response_message(response):
         #完成错误代码输出
         error_code = response['code']
         error_message = response['message']
-        message = f'错误码:{error_code}。\n 错误详细信息{error_message}'
+        message = f'响应码:{status_code} 错误详细信息{error_message}'
+        print(message)
     return status_code, message
