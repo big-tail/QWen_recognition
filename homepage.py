@@ -56,16 +56,8 @@ def upload_images():
             if submit and (exist_code == HTTPStatus.OK and repeat_flag == 0):
                 st.session_state['input_pictures'].append(picture_url)
             elif submit and (exist_code != HTTPStatus.OK or repeat_flag == 1):
-                worning_message = '填入的图片URL不存在' if not repeat_flag else '填入的图片URL重复'
-                st.warning(worning_message, icon="⚠️")
-            # clicked = st.button("添加图片URL")
-            # if clicked and picture_url not in st.session_state["input_pictures"]:
-            #
-            #     exist_code = Chat_With_QWen.check_online_image_exist(picture_url)
-            #     if exist_code == HTTPStatus.OK:
-            #         st.session_state['input_pictures'].append(picture_url)
-            #     else:
-            #         st.warning('填入的URL不存在')
+                warning_message = '填入的图片URL不存在' if not repeat_flag else '填入的图片URL重复'
+                st.warning(warning_message, icon="⚠️")
         st.caption('已上传图片：')
         for image in st.session_state["input_pictures"]:
             st.divider()
@@ -88,7 +80,7 @@ def chat(api_key):
         display_chat(format_messages)
         ### 如果历史对话中不包含本地图片，使用http请求
         if st.session_state['image_upload_method'] == 'online':
-            response = Chat_With_QWen.conversation_call_with_http(st.session_state['history'],api_key=api_key)
+            response = Chat_With_QWen.conversation_call_with_http(st.session_state['history'], api_key=api_key)
             status_code, response_message = Chat_With_QWen.dispose_response_message(response)
             if status_code == HTTPStatus.OK:
                 st.session_state['history'].append(response_message)
@@ -99,7 +91,7 @@ def chat(api_key):
                 st.session_state['history'].pop()
         ### 如果历史对话中包含本地图片，使用SDK请求
         else:
-            response = Chat_With_QWen.conversation_call_with_sdk(st.session_state['history'],api_key=api_key)
+            response = Chat_With_QWen.conversation_call_with_sdk(st.session_state['history'], api_key=api_key)
             status_code, response_message = Chat_With_QWen.dispose_response_message(response)
             ### 成功返回信息则展示，错误则弹出会话
             if status_code == HTTPStatus.OK:
@@ -141,10 +133,11 @@ def main():
     for message in st.session_state["history"]:
         display_chat(message)
     upload_images()
-    try:
+    if 'api_key' in locals():
         chat(api_key)
-    except Exception as e:
-        st.error(f'错误信息 {e} ，请检查api_key是否保存')
+    else:
+        st.error("请检查api_key是否保存,如没有，请前往Qwen API Setting配置")
+
 
 if __name__ == '__main__':
     main()
